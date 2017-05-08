@@ -28,24 +28,37 @@ are not listed in tables in the standard.*
     * WordBreakTest.html
     * WordBreakTest.txt
 
+## Mirroring
 * BidiMirroring.txt
+    + Data: `Bidi_Paired_Bracket` `Bidi_Mirroring_Glyph`
     * Glyphs which should be mirrored and their mirrored counterparts (when switching from LTR or RTL text)
     * Also includes a list of codepoints which have no mirrored pair, but should be mirrored (by flipping).
 
-BidiBrackets.txt
-BidiCharacterTest.txt
-BidiTest.txt
-Blocks.txt
-CaseFolding.txt
-CJKRadicals.txt
-CompositionExclusions.txt
-DerivedAge.txt
-DerivedCoreProperties.txt
-DerivedNormalizationProps.txt
-EastAsianWidth.txt
-EmojiSources.txt
+* **BidiBrackets.txt #Data**
+    + Data: Bidi_Paired_Bracket_Type
+    *  Subset of BidiMirroringGlyph. And only includes brackets.
+    * **Note** does not include matched quotation marks.
 
-* extracted
+* **BidiCharacterTest.txt #N/A**
+    * *This file provides a conformance test for implementations of the Unicode Bidirectional Algorithm, specified in UAX \#9: Unicode.
+    Bidirectional Algorithm, at http://www.unicode.org/reports/tr9/*
+    * Focuses on reordering of text from a single line
+* **BidiTest.txt #N/A**
+    * Tests conformance to UBA focusing on more than a single line
+
+* **Blocks.txt `Block`**
+* **CaseFolding.txt**
+* **CJKRadicals.txt**
+* **CompositionExclusions.txt**
+* **DerivedAge.txt**
+* **DerivedCoreProperties.txt**
+* **DerivedNormalizationProps.txt**
+* **EastAsianWidth.txt**
+* **EmojiSources.txt** #Shift-JIS #encoding
+    * *This file provides mappings between Unicode code points and sequences on one hand
+    and Shift-JIS codes for cell phone carrier symbols on the other hand.*
+
+* **extracted/**
     * DerivedBidiClass.txt
     * DerivedBinaryProperties.txt
     * DerivedCombiningClass.txt
@@ -58,13 +71,12 @@ EmojiSources.txt
     * DerivedNumericType.txt
     * DerivedNumericValues.txt
 
-
 HangulSyllableType.txt
 Index.txt
 IndicPositionalCategory.txt
 IndicSyllabicCategory.txt
-Jamo.txt
-LineBreak.txt
+* **Jamo.txt `Jamo_Short_Name`**
+* **LineBreak.txt `Line_Break`**
 NamedSequencesProv.txt
 NamedSequences.txt
 NamesList.html
