@@ -1,3 +1,5 @@
+#!/usr/bin/env perl6
+constant $debug = False;
 #÷ [0.2] SPACE (Other) ÷ [999.0] SPACE (Other) ÷ [0.3]
 
 # Default Grapheme Break Test
@@ -19,10 +21,10 @@ grammar GraphemeBreakTest {
     token hex {
         <:AHex>+
     }
-    token nobreak {
+    token break {
         '÷'
     }
-    token break {
+    token nobreak {
         '×'
     }
     token comment {
@@ -30,37 +32,63 @@ grammar GraphemeBreakTest {
     }
 }
 class parser {
+    has $!string;
+    has @!ord-array;
     method TOP ($/) {
-        make $/.caps
-    }
-}
-
-my @list = GraphemeBreakTest.new.parse(
-    '÷ 0378 × 0308 ÷ 0020 ÷	#  ÷ [0.2]'
-    , actions => parser.new
-).made;
-#say @list;
-my @stack;
-my @results;
-my @str;
-sub move-from-stack {
-    @results[@results.elems].append: @stack;
-    @stack = [];
-}
-for @list {
-    if .key eq 'nobreak' {
-        say 'nobreak';
-    }
-    if .key eq 'break' {
-        say 'break';
+        my @list =  $/.caps;
+        my @stack;
+        my @results;
+        my @str;
+        sub move-from-stack {
+            if @stack {
+                @results[@results.elems].append: @stack;
+                @stack = [];
+            }
+        }
+        for @list {
+            if .key eq 'nobreak' {
+                say 'nobreak' if $debug;
+            }
+            if .key eq 'break' {
+                say 'break' if $debug;
+                move-from-stack;
+            }
+            if .key eq 'hex' {
+                my Int:D $cp = :16(~.value);
+                @str.push: $cp;
+                @stack.push: $cp;
+            }
+        }
         move-from-stack;
-    }
-    if .key eq 'hex' {
-        my Int:D $cp = :16(~.value);
-        @str.push: $cp;
-        @stack.push: $cp;
+        say @results.perl if $debug;
+        my Str:D $string = @str.chrs;
+        make {
+            string => $string,
+            ord-array => @results
+        }
     }
 }
-move-from-stack;
-say @results.perl;
-my Str:D $string = @str.chrs;
+use Test;
+sub process-line (Str:D $line) {
+    return if $line.starts-with('#');
+    my $list = GraphemeBreakTest.new.parse(
+        #'÷ 0378 × 0308 ÷ 0020 ÷	#  ÷ [0.2]'
+        $line
+        #'÷ AC00 × 200D ÷ #'
+        #'÷ 0020 ÷ 0020 ÷	#  ÷ [0.2] SP'
+        , actions => parser.new
+    ).made;
+    
+    use Test;
+    is-deeply $list<ord-array>.elems, $list<string>.chars, "Right num of chars";
+    for ^$list<ord-array>.elems {
+        is-deeply $list<string>.substr($_, 1).ords.flat, $list<ord-array>[$_].flat, "Grapheme $_";
+    }
+}
+sub MAIN (Str:D $file) {
+    die unless $file.IO.f;
+    for $file.IO.lines -> $line {
+        process-line $line;
+    }
+    done-testing;
+}
