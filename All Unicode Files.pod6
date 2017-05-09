@@ -1,5 +1,5 @@
 =begin pod
-=head2 List of Canonical Aliases
+=head2 B<List of Canonical Aliases>
 
 =item PropertyAliases.txt
 =item PropertyValueAliases.txt
@@ -76,7 +76,7 @@
     =item DerivedNumericType.txt
     =item DerivedNumericValues.txt
 
-HangulSyllableType.txt
+=item HangulSyllableType.txt
 =item Index.txt
 =item IndicPositionalCategory.txt
 =item IndicSyllabicCategory.txt
@@ -104,4 +104,37 @@ HangulSyllableType.txt
 =item USourceData.txt
 =item USourceGlyphs.pdf
 =end pod
-say $=pod;
+use Terminal::ANSIColor;
+sub traverse-pod ($thepod, $depth?, $type?) {
+    given $thepod {
+        when Array {
+            for $thepod.list -> $a {
+                traverse-pod($a, $depth, $type);
+            }
+        }
+        #when FormattingCode type
+        when Pod::Block {
+            my ($d, $t);
+            try { $d = .level }
+            try { $t = .type  }
+            $d //= $depth;
+            $t //= $type;
+            traverse-pod .contents, $d, $t;
+        }
+        when Str {
+            my $str = $depth.defined ?? " " x ($depth×2) !! "";
+            $str ~= $_;
+            if $type {
+                my @styles;
+                @styles.push('italic') if $type.contains('I');
+                @styles.push('bold') if $type.contains('B');
+                @styles.push('underline') if $type.contains('U');
+                $str = colored($str, @styles.join(' ') );
+            }
+            $str.say;
+        }
+        default { die "oh no: ", .WHAT.VAR.gist };
+    }
+
+}
+#traverse-pod($=pod);
