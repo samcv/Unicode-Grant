@@ -15,21 +15,10 @@ constant $debug = False;
 #	- [x] the rule that determines whether there is a break or not
 grammar GraphemeBreakTest {
     token TOP { [<.ws> [<break> | <nobreak>] <.ws>]+ % <hex> <comment> }
-    token break-nobreak {
-        <nobreak> | <break>
-    }
-    token hex {
-        <:AHex>+
-    }
-    token break {
-        '÷'
-    }
-    token nobreak {
-        '×'
-    }
-    token comment {
-        '#' .* $
-    }
+    token hex     { <:AHex>+ }
+    token break   { '÷'      }
+    token nobreak { '×'      }
+    token comment { '#' .* $ }
 }
 class parser {
     has $!string;
@@ -49,11 +38,11 @@ class parser {
             if .key eq 'nobreak' {
                 say 'nobreak' if $debug;
             }
-            if .key eq 'break' {
+            elsif .key eq 'break' {
                 say 'break' if $debug;
                 move-from-stack;
             }
-            if .key eq 'hex' {
+            elsif .key eq 'hex' {
                 my Int:D $cp = :16(~.value);
                 @str.push: $cp;
                 @stack.push: $cp;
@@ -69,26 +58,28 @@ class parser {
     }
 }
 use Test;
-sub process-line (Str:D $line) {
+sub process-line (Str:D $line, @fail) {
+    state $line-no = 0;
+    $line-no++;
     return if $line.starts-with('#');
     my $list = GraphemeBreakTest.new.parse(
-        #'÷ 0378 × 0308 ÷ 0020 ÷	#  ÷ [0.2]'
-        $line
-        #'÷ AC00 × 200D ÷ #'
-        #'÷ 0020 ÷ 0020 ÷	#  ÷ [0.2] SP'
-        , actions => parser.new
+        $line,
+        actions => parser.new
     ).made;
     
     use Test;
-    is-deeply $list<ord-array>.elems, $list<string>.chars, "Right num of chars";
+    is-deeply $list<ord-array>.elems, $list<string>.chars, "Line $line-no: right num of chars #{$list<string>.uninames}" or @fail.push($line-no);
     for ^$list<ord-array>.elems {
-        is-deeply $list<string>.substr($_, 1).ords.flat, $list<ord-array>[$_].flat, "Grapheme $_";
+        is-deeply $list<string>.substr($_, 1).ords.flat, $list<ord-array>[$_].flat, "Line $line-no: grapheme $_ has correct codepoints" or @fail.push($line-no);
     }
 }
 sub MAIN (Str:D $file) {
     die unless $file.IO.f;
+    my @fail;
     for $file.IO.lines -> $line {
-        process-line $line;
+        process-line $line, @fail;
     }
     done-testing;
+    my $bag = @fail.Bag;
+    note "Grapheme_Cluster_Break test: Failed {$bag.elems} lines: ", $bag;
 }
