@@ -1,12 +1,9 @@
 #!/usr/bin/env perl6
+use v6;
 my $location = "3rdparty/Unicode/9.0.0/ucd/auxiliary/GraphemeBreakTest.txt";
 $location = "t/spec/$location".IO.e ?? "t/spec/$location" !! $location;
-#die $location.IO.absolute;
-my $folder = "";
+our $DEBUG;
 use Test;
-plan 2411;
-constant $debug = False;
-
 # Unicode Data files in 3rdparty/Unicode/ and the snippet of commented code below
 # are under SPDX-License-Identifier: Unicode-DFS-2016
 # See 3rdparty/Unicode/LICENSE for full text of license.
@@ -36,10 +33,12 @@ constant %fudged-tests = {
     837 => ['ALL'],
     839 => ['ALL'],
 };
-sub MAIN (Str:D :$file? = $location, Str :$only?) {
+sub MAIN (Str:D :$file? = $location, Str :$only?, Bool:D :$debug = False) {
     my @only = $only ?? $only.split([',', ' ']) !! Empty;
-    die $file.IO.absolute unless $file.IO.f;
+    die "Can't find file at ", $file.IO.absolute unless $file.IO.f;
+    note "Reading file ", $file.IO.absolute;
     my @fail;
+    plan (@only.elems or 2411);
     for $file.IO.lines -> $line {
         process-line $line, @fail, :@only;
     }
@@ -60,6 +59,7 @@ class parser {
         my @list =  $/.caps;
         my @stack;
         my @results;
+        note $/ if $DEBUG;
         sub move-from-stack {
             if @stack {
                 @results[@results.elems].append: @stack;
@@ -68,10 +68,10 @@ class parser {
         }
         for @list {
             if .key eq 'nobreak' {
-                say 'nobreak' if $debug;
+                say 'nobreak' if $DEBUG;
             }
             elsif .key eq 'break' {
-                say 'break' if $debug;
+                note 'break' if $DEBUG;
                 move-from-stack;
             }
             elsif .key eq 'hex' {
@@ -80,23 +80,25 @@ class parser {
         }
         my $string =  @results».List.flat.chrs;
         move-from-stack;
-        say @results.perl if $debug;
+        note @results.perl if $DEBUG;
         make {
             string    => $string,
             ord-array => @results
         }
     }
 }
-sub process-line (Str:D $line, @fail, :@only) {
+sub process-line (Str:D $line, @fail, :@only!) {
     state $line-no = 0;
     $line-no++;
-    next if @only and $line-no ne @only.any;
-    my Bool:D $fudge-b = %fudged-tests{$line-no}:exists ?? True !! False;
+    return if @only and $line-no ne @only.any;
     return if $line.starts-with('#');
+    my Bool:D $fudge-b = %fudged-tests{$line-no}:exists ?? True !! False;
+    note 'LINE: [' ~ $line ~ ']' if $DEBUG;
     my $list = GraphemeBreakTest.new.parse(
         $line,
         actions => parser.new
     ).made;
+    die "line $line-no undefined parse" if $list.defined.not;
     if $fudge-b {
         # fudge is either set to ALL or set to 'C01234' woudl fudge character test
         # and graphemes 0 through 4. _01__4 would fudge character test, and graphemes 2 and 3
@@ -105,21 +107,17 @@ sub process-line (Str:D $line, @fail, :@only) {
             $fudge-b = False; # We already have todo'd don't attempt again
         }
     }
-    if $fudge-b {
-        # 6th index of fudge string <=> 5th string index (6th character)
-        todo "$_ grapheme line $line-no todo" if %fudged-tests{$line-no}.any eq $_;
-    }
-    is-deeply $list<ord-array>.elems, $list<string>.chars, "Line $line-no: right num of chars | {$list<string>.uninames}" or @fail.push($line-no);
-    for ^$list<ord-array>.elems {
+    is-deeply $list<ord-array>.elems, $list<string>.chars, "Line $line-no: right num of chars | {$list<string>.uninames.perl}" or @fail.push($line-no);
+    for ^$list<ord-array>.elems -> $elem {
         if $fudge-b {
             # 6th index of fudge string <=> 5th string index (6th character)
-            if %fudged-tests{$line-no}.chars < $_ {
+            if %fudged-tests{$line-no}.chars < $elem {
                 #don't check
             }
             else {
-                todo "$_ grapheme line $line-no todo" if %fudged-tests{$line-no}.any eq $_;
+                todo "$elem grapheme line $line-no todo" if %fudged-tests{$line-no}.any eq $elem;
             }
         }
-        is-deeply $list<string>.substr($_, 1).ords.flat, $list<ord-array>[$_].flat, "Line $line-no: grapheme $_ has correct codepoints" or @fail.push($line-no);
+        is-deeply $list<string>.substr($elem, 1).ords.flat, $list<ord-array>[$elem].flat, "Line $line-no: grapheme $elem has correct codepoints" or @fail.push($line-no);
     }
 }
