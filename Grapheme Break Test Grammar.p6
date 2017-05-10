@@ -1,4 +1,6 @@
 #!/usr/bin/env perl6
+use Test;
+plan 2411;
 constant $debug = False;
 #÷ [0.2] SPACE (Other) ÷ [999.0] SPACE (Other) ÷ [0.3]
 
@@ -27,7 +29,6 @@ class parser {
         my @list =  $/.caps;
         my @stack;
         my @results;
-        my @str;
         sub move-from-stack {
             if @stack {
                 @results[@results.elems].append: @stack;
@@ -43,21 +44,18 @@ class parser {
                 move-from-stack;
             }
             elsif .key eq 'hex' {
-                my Int:D $cp = :16(~.value);
-                @str.push: $cp;
-                @stack.push: $cp;
+                @stack.push: :16(~.value);
             }
         }
+        my $string =  @results».List.flat.chrs;
         move-from-stack;
         say @results.perl if $debug;
-        my Str:D $string = @str.chrs;
         make {
-            string => $string,
+            string    => $string,
             ord-array => @results
         }
     }
 }
-use Test;
 sub process-line (Str:D $line, @fail) {
     state $line-no = 0;
     $line-no++;
@@ -67,7 +65,6 @@ sub process-line (Str:D $line, @fail) {
         actions => parser.new
     ).made;
     
-    use Test;
     is-deeply $list<ord-array>.elems, $list<string>.chars, "Line $line-no: right num of chars #{$list<string>.uninames}" or @fail.push($line-no);
     for ^$list<ord-array>.elems {
         is-deeply $list<string>.substr($_, 1).ords.flat, $list<ord-array>[$_].flat, "Line $line-no: grapheme $_ has correct codepoints" or @fail.push($line-no);
@@ -79,7 +76,6 @@ sub MAIN (Str:D $file) {
     for $file.IO.lines -> $line {
         process-line $line, @fail;
     }
-    done-testing;
     my $bag = @fail.Bag;
     note "Grapheme_Cluster_Break test: Failed {$bag.elems} lines: ", $bag;
 }
