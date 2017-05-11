@@ -20,6 +20,9 @@
 
 =item auxiliary/
     =item2 GraphemeBreakProperty.txt
+        =item3 Important test for checking how Graphemes breakup
+        =item3 [X] check breaking them up arbitrarily. I.E. instead of just
+        checking on the total numbers, check when you .substr them
     =item2 GraphemeBreakTest.html
     =item2 GraphemeBreakTest.txt
     =item2 LineBreakTest.html
@@ -27,18 +30,22 @@
     =item2 SentenceBreakProperty.txt
     =item2 SentenceBreakTest.html
     =item2 SentenceBreakTest.txt
+        =item3 UniProp_TEST: `Sentence_Break`
+        =item3 Perl6-STATUS: N/A
+
     =item2 WordBreakProperty.txt
+        =item3 UniProp_DATA: `Word_Break`
     =item2 WordBreakTest.html
     =item2 WordBreakTest.txt
 
 =head1 Mirroring
 =item BidiMirroring.txt
-    =item2 Data: `Bidi_Paired_Bracket` `Bidi_Mirroring_Glyph`
+    =item2 UniProp: `Bidi_Paired_Bracket` `Bidi_Mirroring_Glyph`
     =item2 Glyphs which should be mirrored and their mirrored counterparts (when switching from LTR or RTL text)
     =item2 Also includes a list of codepoints which have no mirrored pair, but should be mirrored (by flipping).
 
 =item BidiBrackets.txt #Data
-    =item2 Data: Bidi_Paired_Bracket_Type
+    =item2 UniProp: `Bidi_Paired_Bracket_Type`
     =item2 Subset of BidiMirroringGlyph. And only includes brackets.
     =item2 **Note** does not include matched quotation marks.
 
@@ -46,12 +53,18 @@
     =item2 *This file provides a conformance test for implementations of the Unicode Bidirectional Algorithm, specified in UAX \#9: Unicode.
     Bidirectional Algorithm, at http://www.unicode.org/reports/tr9/*
     =item2 Focuses on reordering of text from a single line
+
 =item BidiTest.txt #N/A
-    =item2 Tests conformance to UBA focusing on more than a single line
+    =item2 Tests conformance to Unicode BA focusing on more than a single line
 
 =item Blocks.txt
     =item2 Data: Block
 =item CaseFolding.txt
+    =item2 This file is a supplement to the UnicodeData file.
+        It provides a case folding mapping generated from the Unicode Character Database.
+        If all characters are mapped according to the full mapping below, then
+        case differences (according to UnicodeData.txt and SpecialCasing.txt)
+        are eliminated.
 =item CJKRadicals.txt
 =item CompositionExclusions.txt
 =item DerivedAge.txt
@@ -63,18 +76,18 @@
     =item2 This file provides mappings between Unicode code points and sequences on one hand
         and Shift-JIS codes for cell phone carrier symbols on the other hand.
 
-=item extracted/
-    =item DerivedBidiClass.txt
-    =item DerivedBinaryProperties.txt
-    =item DerivedCombiningClass.txt
-    =item DerivedDecompositionType.txt
-    =item DerivedEastAsianWidth.txt
-    =item DerivedGeneralCategory.txt
-    =item DerivedJoiningGroup.txt
-    =item DerivedJoiningType.txt
-    =item DerivedLineBreak.txt
-    =item DerivedNumericType.txt
-    =item DerivedNumericValues.txt
+=item extracted
+    =item2 DerivedBidiClass.txt
+    =item2 DerivedBinaryProperties.txt
+    =item2 DerivedCombiningClass.txt
+    =item2 DerivedDecompositionType.txt
+    =item2 DerivedEastAsianWidth.txt
+    =item2 DerivedGeneralCategory.txt
+    =item2 DerivedJoiningGroup.txt
+    =item2 DerivedJoiningType.txt
+    =item2 DerivedLineBreak.txt
+    =item2 DerivedNumericType.txt
+    =item2 DerivedNumericValues.txt
 
 =item HangulSyllableType.txt
 =item Index.txt
@@ -82,8 +95,10 @@
 =item IndicSyllabicCategory.txt
 =item Jamo.txt
     =item2 Data: Jamo_Short_Name
+
 =item LineBreak.txt
     =item2 Data: Line_Break
+
 =item NamedSequencesProv.txt
 =item NamedSequences.txt
 =item NamesList.html
@@ -91,6 +106,36 @@
 =item NormalizationCorrections.txt
 =item NormalizationTest.txt
 =item PropList.txt
+    =item2 Uniprop_DATA
+        =item3 White_Space
+        =item3 Bidi_Control
+        =item3 Join_Control
+        =item3 Dash
+        =item3 Hyphen
+        =item3 Quotation_Mark
+        =item3 Terminal_Punctuation
+        =item3 Other_Math
+        =item3 Hex_Digit
+        =item3 ASCII_Hex_Digit
+        =item3 Other_Alphabetic
+        =item3 Ideographic
+        =item3 Diacritic
+        =item3 Extender
+        =item3 Other_Lowercase
+        =item3 Other_Uppercase
+        =item3 Noncharacter_Code_Point
+        =item3 Other_Grapheme_Extend
+        =item3 IDS_Binary_Operator
+        =item3 IDS_Trinary_Operator
+        =item3 Radical
+        =item3 Unified_Ideograph
+        =item3 Other_Default_Ignorable_Code_Point
+        =item3 Deprecated
+        =item3 Soft_Dotted
+        =item3 Logical_Order_Exception
+        =item3 Other_ID_Start
+        =item3 Other_ID_Continue
+
 =item ReadMe.txt
 =item ScriptExtensions.txt
 =item Scripts.txt
@@ -112,8 +157,18 @@ sub traverse-pod ($thepod, $depth?, $type?) {
                 traverse-pod($a, $depth, $type);
             }
         }
-        #when FormattingCode type
+        #when FormattingCode
         when Pod::Block {
+            if .isa(Pod::Block::Named) {
+                my $n = $thepod.name;
+                if $n eq 'done' {
+                    print '- [X] ';
+                }
+                elsif $n eq 'todo' {
+                    print '- [ ] ';
+                }
+                #   die $n;
+            }
             my ($d, $t);
             try { $d = .level }
             try { $t = .type  }
@@ -137,4 +192,7 @@ sub traverse-pod ($thepod, $depth?, $type?) {
     }
 
 }
+#say $=pod;
+
+#exit;
 #traverse-pod($=pod);
