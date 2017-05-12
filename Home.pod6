@@ -1,0 +1,30 @@
+=begin pod
+This is the wiki for my work on Unicode Grant for Perl 6.
+
+The page below, All Unicode Files has most of the documentation so far.
+L<All Unicode Files|All-Unicode-Files>
+
+=head2 Merged in Work Below
+
+=head2 Merged in so far:
+
+=head3 Roast L<New version of GraphemeBreakTest.t|https://github.com/perl6/roast/pull/267>
+
+New script tests the contents of each grapheme individually from
+the GraphemeClusterBreak.txt file from the Unicode 9.0 test suite.
+
+Previously we only checked the total number of ‘.chars’ for the
+string as a whole. Here we actually check the string length as well
+as that each grapheme contains the exact correct codepoints
+in the correct order and correct graphemes.
+
+This new test uses a grammar to parse the file and generally is much more
+robust than the previous script.
+
+Running the parse class generates an array of arrays where the index
+of the outer array indicates which
+
+C<[[10084, 776], [9757]]> would indicate the 0th grapheme is made up of
+cp's 10084 and 776 and the 1st grapheme is made up cp 9757.
+
+=end pod

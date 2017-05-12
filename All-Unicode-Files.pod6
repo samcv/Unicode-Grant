@@ -1,37 +1,75 @@
+#!/usr/bin/env perl6
 =begin pod
-=head2 B<List of Canonical Aliases>
+=head3 Key
+=item NameofFile.txt I<N/A-to-Perl6>
+    =item2 The name of the file as seen at URL
+    =item2 Will show I<N/A-to-Perl6> if its contents are not needed as a B<data source>
+    or as a B<test source>.
+=item TASK: Task-name-here
+    =item2 The name of the task that this data file is associated with for this
+    Grant's work.
+
+=item Perl6-TEST-STATUS: N/A
+    =item2 shows status of a B<test data> document being implemented in Perl 6
+=item UniProp_DATA: I<Property_Name>
+    =item2 Shows what properties are included in a B<source data> document.
+
+=head1 Contains a Directory listing and overview of Unicode Data files
+
+=head2 List of Canonical Aliases
 
 =item PropertyAliases.txt
+    =item2 Alias names of Unicode property I<names> to other canonical property names.
+    =item2 We need this because Perl 6 should accept any canonical property name alias
+          Aside: can/should be case insensitive and nonsensitive to underscores
+          I<graphemeclusterbreak> should be work for I<Grapheme_Cluster_Break>
+    =item2 B<NOT> guaranteed to be unique and several property aliases are also
+    unrelated property values
+
 =item PropertyValueAliases.txt
+    =item2 Similar to Property name aliases (see item above), except this is for
+    property B<values>. They should be interchangable as well.
+
 =item NameAliases.txt
 
-=head2 something else
-
 =item ArabicShaping.txt
-    =item2 I<This file defines the Joining_Type and Joining_Group property
+    =item2 UniProp_DATA: C<Joining_Type> <C<Joining_Group>
+    =item2 “I<This file defines the Joining_Type and Joining_Group property
     values for Arabic, Syriac, N'Ko, Mandaic, and Manichaean positional
     shaping, repeating in machine readable form the information
     exemplified in Tables 9-3, 9-8, 9-9, 9-10, 9-14, 9-15, 9-16, 9-19,
     9-20, 10-4, 10-5, 10-6, 10-7, and 19-5 of The Unicode Standard core
     specification. This file also defines Joining_Type values for
     Mongolian, Phags-pa, and Psalter Pahlavi positional shaping, which
-    are not listed in tables in the standard.>
+    are not listed in tables in the standard.>”
 
 
 =item auxiliary/
     =item2 GraphemeBreakProperty.txt
-        =item3 Important test for checking how Graphemes breakup
-        =item3 [X] check breaking them up arbitrarily. I.E. instead of just
-        checking on the total numbers, check when you .substr them
+        =item3 UniProp_DATA: C<Grapheme_Cluster_Break>
+        =item3 One of the most important properties. Almost exclusively defines
+        how we break up codepoints into graphemes.
     =item2 GraphemeBreakTest.html
+        =item3 TASK: L<GraphemeClusterBreak|GraphemeClusterBreak>
+        =item3 Has a table which shows a matrix of how GCB properties interact with
+        each other. L<9.0 Online|http://www.unicode.org/Public/9.0.0/ucd/auxiliary/GraphemeBreakTest.html>
     =item2 GraphemeBreakTest.txt
+        =item2 Perl6-TEST-STATUS: [X] L<Merged. ROAST_TESTING|Home#roast-new-version-of-graphemebreaktestt>
+        =item3 Important test for checking how Graphemes breakup
+        =item4 check breaking them up arbitrarily. I.E.
+        instead of just checking on the total numbers, check when you .substr them
     =item2 LineBreakTest.html
     =item2 LineBreakTest.txt
+        =item3 Perl6-TEST-STATUS: N/A
+        =item3 Perl 6 has access to the Sentence_Break property, but the test is
+        not needed because we don't break up text by sentences in Perl 6.
     =item2 SentenceBreakProperty.txt
-    =item2 SentenceBreakTest.html
-    =item2 SentenceBreakTest.txt
-        =item3 UniProp_TEST: `Sentence_Break`
-        =item3 Perl6-STATUS: N/A
+        =item3 UniProp_DATA: C<Sentence_Break>
+    =item2 SentenceBreakTest.html N/A-to-Perl6
+    =item2 SentenceBreakTest.txt N/A-to-Perl6
+        =item3 Perl6-TEST-STATUS: N/A
+        =item3 Perl 6 has access to the Sentence_Break property, but the test is
+        not needed because we don't break up text by sentences in Perl 6.
 
     =item2 WordBreakProperty.txt
         =item3 UniProp_DATA: `Word_Break`
@@ -65,7 +103,7 @@
         If all characters are mapped according to the full mapping below, then
         case differences (according to UnicodeData.txt and SpecialCasing.txt)
         are eliminated.
-=item CJKRadicals.txt
+=item CJKRadicals.txt L<TR|http://www.unicode.org/reports/tr38/>
 =item CompositionExclusions.txt
 =item DerivedAge.txt
 =item DerivedCoreProperties.txt
@@ -106,35 +144,14 @@
 =item NormalizationCorrections.txt
 =item NormalizationTest.txt
 =item PropList.txt
-    =item2 Uniprop_DATA
-        =item3 White_Space
-        =item3 Bidi_Control
-        =item3 Join_Control
-        =item3 Dash
-        =item3 Hyphen
-        =item3 Quotation_Mark
-        =item3 Terminal_Punctuation
-        =item3 Other_Math
-        =item3 Hex_Digit
-        =item3 ASCII_Hex_Digit
-        =item3 Other_Alphabetic
-        =item3 Ideographic
-        =item3 Diacritic
-        =item3 Extender
-        =item3 Other_Lowercase
-        =item3 Other_Uppercase
-        =item3 Noncharacter_Code_Point
-        =item3 Other_Grapheme_Extend
-        =item3 IDS_Binary_Operator
-        =item3 IDS_Trinary_Operator
-        =item3 Radical
-        =item3 Unified_Ideograph
-        =item3 Other_Default_Ignorable_Code_Point
-        =item3 Deprecated
-        =item3 Soft_Dotted
-        =item3 Logical_Order_Exception
-        =item3 Other_ID_Start
-        =item3 Other_ID_Continue
+    =item2 Uniprop_DATA: C<White_Space> C<Bidi_Control> C<Join_Control> C<Dash>
+    C<Hyphen> C<Quotation_Mark> C<Terminal_Punctuation> C<Other_Math>
+    C<Hex_Digit> C<ASCII_Hex_Digit> C<Other_Alphabetic> C<Ideographic>
+    C<Diacritic> C<Extender> C<Other_Lowercase> C<Other_Uppercase>
+    C<Noncharacter_Code_Point> C<Other_Grapheme_Extend> C<IDS_Binary_Operator>
+    C<IDS_Trinary_Operator> C<Radical> C<Unified_Ideograph>
+    C<Other_Default_Ignorable_Code_Point> C<Deprecated> C<Soft_Dotted>
+    C<Logical_Order_Exception> C<Other_ID_Start> C<Other_ID_Continue>
 
 =item ReadMe.txt
 =item ScriptExtensions.txt
@@ -146,8 +163,14 @@
 =item UCD.zip
 =item UnicodeData.txt
 =item Unihan.zip
-=item USourceData.txt
-=item USourceGlyphs.pdf
+=item USourceData.txt N/A-to-Perl6
+    =item2 Data on submitted CJK ideographs submitted to the Unicode organization
+    =item2 N/A-to-Perl6, this is distributed to allow greater distribution of
+         proposed additions to the CJK ideograph extensions
+
+=item USourceGlyphs.pdf N/A-to-Perl6
+    =item2 See item above, this just contains pictures of the proposed CJK Ideographs
+
 =end pod
 use Terminal::ANSIColor;
 sub traverse-pod ($thepod, $depth?, $type?) {
@@ -192,7 +215,7 @@ sub traverse-pod ($thepod, $depth?, $type?) {
     }
 
 }
-#say $=pod;
+say $=pod;
 
 #exit;
 #traverse-pod($=pod);
