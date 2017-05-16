@@ -3,7 +3,7 @@ sub MAIN (Str :$filename, Bool:D :$dry-run = False) {
     my $OWD = $*CWD;
     my Bool:D $has-pulled = False;
     die "You need to clone git@github.com:samcv/Unicode-Grant.wiki.git into ./wiki" unless "wiki".IO.d;
-    my @files = $filename // dir.grep({.extension eq 'pod6'});
+    my @files = $filename // dir.grep({.extension eq 'pod6' and !.starts-with('.')});
     for @files -> $filename {
         chdir $OWD;
         my $file-io = $filename.IO;

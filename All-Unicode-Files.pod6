@@ -35,7 +35,7 @@
 =item NameAliases.txt
 
 =item ArabicShaping.txt
-    =item2 Perl6-TEST-STATUS: InProjectRepo
+    =item2 Perl6-TEST-STATUS: L<InProjectRepo|https://github.com/samcv/Unicode-Grant/blob/master/t/ArabicShaping.t>
     =item2 UniProp_DATA: C<Joining_Type> <C<Joining_Group>
     =item2 “I<This file defines the Joining_Type and Joining_Group property
     values for Arabic, Syriac, N'Ko, Mandaic, and Manichaean positional
@@ -87,6 +87,7 @@
 
 =item BidiBrackets.txt #Data
     =item2 UniProp: `Bidi_Paired_Bracket_Type`
+    =item2 Perl6-TEST-STATUS: L<Failing in this repo|https://github.com/samcv/Unicode-Grant/blob/master/t/BidiBrackets.t>
     =item2 Subset of BidiMirroringGlyph. And only includes brackets.
     =item2 **Note** does not include matched quotation marks.
 

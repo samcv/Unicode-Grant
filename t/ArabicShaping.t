@@ -1,4 +1,6 @@
 my $line = ' 0600; ARABIC NUMBER SIGN; U; No_Joining_Group';
+use lib 't';
+use Test::UniProp;
 grammar ArabicShaping {
     rule TOP {
         <.ws>
@@ -22,13 +24,14 @@ class ArabicShaping::Actions {
             use nqp;
             $result = nqp::radix_I(16, $string, 0, 0, 0)[0];
         }
+        $result;
     }
     method TOP ($/) {
         make {
-            codepoint => :16(~$<hex>) // radix_16(~$<hex>),
+            codepoint => radix_16(~$<hex>),
             description => ~$<description>,
-            joining-type => ~$<joining-type>,
-            joining-group => ~$<joining-group>
+            Joining_Type => ~$<joining-type>,
+            Joining_Group => ~$<joining-group>
         }
     }
 
@@ -43,8 +46,7 @@ sub MAIN (Str:D $filename = 'UNIDATA/ArabicShaping.txt') {
             );
         $parse orelse next;
         my %hash = $parse.made // exit;
-        is %hash<codepoint>.uniprop('Joining_Group'), %hash<joining-group>, "Joining_Group %hash<description>";
-        is %hash<codepoint>.uniprop('Joining_Type'), %hash<joining-type>, "Joining_Type %hash<description>";
+        is-prop-hash %hash;
     }
     done-testing;
 }
