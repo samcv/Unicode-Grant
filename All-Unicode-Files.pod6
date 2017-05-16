@@ -27,10 +27,12 @@
           I<graphemeclusterbreak> should be work for I<Grapheme_Cluster_Break>
     =item2 B<NOT> guaranteed to be unique and several property aliases are also
     unrelated property values
+    =item2 Perl6-TEST-STATUS: L<In Progress|https://github.com/samcv/Unicode-Grant/blob/master/t/PropertyAliases.t>
 
 =item PropertyValueAliases.txt
     =item2 Similar to Property name aliases (see item above), except this is for
     property B<values>. They should be interchangable as well.
+    =item2 Perl6-TEST-STATUS: L<In Progress|https://github.com/samcv/Unicode-Grant/blob/master/t/PropertyValueAliases.t>
 
 =item NameAliases.txt
 

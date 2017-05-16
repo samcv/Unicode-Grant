@@ -25,13 +25,18 @@ class PropertyAliases::Actions {
     }
 
 }
-sub MAIN (Str:D $filename = 'UNIDATA/PropertyAliases.txt') {
-    say GetPropertyAliasesLookupHash($filename);
+sub MAIN (Str:D $filename = 'UNIDATA/PropertyAliases.txt', Bool:D :$test) {
+    if $test {
+        test-it;
+    }
+    else {
+         GetPropertyAliasesLookupHash($filename);
+    }
 }
+#| Returns a hash whose keys are PropertyAliases and whose values are the short name
+#| which is usable with GetPropertyValueLookupHash to look up different value aliases
 sub GetPropertyAliasesLookupHash (Str $filename = 'UNIDATA/PropertyAliases.txt') is export {
     my $io = $filename.IO;
-    chdir $io.dirname;
-    use Test;
     my %lookup-hash;
     for $io.lines {
         next if $_ eq '' or .starts-with('#');
@@ -42,7 +47,17 @@ sub GetPropertyAliasesLookupHash (Str $filename = 'UNIDATA/PropertyAliases.txt')
         for %hash<Property_Alias_Name> {
             %lookup-hash{$_} = %hash<Property_Name>
         }
-        #say %hash;
     }
     %lookup-hash;
+}
+sub test-it {
+    my %lookup-hash = GetPropertyAliasesLookupHash;
+    use nqp;
+    require Test <&is &done-testing>;
+    for %lookup-hash.keys -> $propname {
+        is nqp::unipropcode($propname),
+            nqp::unipropcode(%lookup-hash{$propname}),
+            "$propname %lookup-hash{$propname}";
+    }
+    done-testing;
 }
