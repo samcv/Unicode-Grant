@@ -11,6 +11,8 @@
 
 =item Perl6-TEST-STATUS: N/A
     =item2 shows status of a B<test data> document being implemented in Perl 6
+=item Perl6-TEST-STATUS: InProjectRepo
+    =item2 Meaning that the test is done and in this repository
 =item UniProp_DATA: I<Property_Name>
     =item2 Shows what properties are included in a B<source data> document.
 
@@ -33,6 +35,7 @@
 =item NameAliases.txt
 
 =item ArabicShaping.txt
+    =item2 Perl6-TEST-STATUS: InProjectRepo
     =item2 UniProp_DATA: C<Joining_Type> <C<Joining_Group>
     =item2 “I<This file defines the Joining_Type and Joining_Group property
     values for Arabic, Syriac, N'Ko, Mandaic, and Manichaean positional
@@ -43,6 +46,7 @@
     Mongolian, Phags-pa, and Psalter Pahlavi positional shaping, which
     are not listed in tables in the standard.>”
 
+=head2 auxiliary
 
 =item auxiliary/
     =item2 GraphemeBreakProperty.txt
@@ -63,18 +67,17 @@
         =item3 Perl6-TEST-STATUS: N/A
         =item3 Perl 6 has access to the Sentence_Break property, but the test is
         not needed because we don't break up text by sentences in Perl 6.
-    =item2 SentenceBreakProperty.txt
-        =item3 UniProp_DATA: C<Sentence_Break>
+    =item2 SentenceBreakProperty.txt C<Sentence_Break>
     =item2 SentenceBreakTest.html N/A-to-Perl6
     =item2 SentenceBreakTest.txt N/A-to-Perl6
         =item3 Perl6-TEST-STATUS: N/A
         =item3 Perl 6 has access to the Sentence_Break property, but the test is
         not needed because we don't break up text by sentences in Perl 6.
 
-    =item2 WordBreakProperty.txt
-        =item3 UniProp_DATA: `Word_Break`
-    =item2 WordBreakTest.html
-    =item2 WordBreakTest.txt
+    =item2 WordBreakProperty.txt C<Word_Break>
+    =item2 WordBreakTest.html NA
+    =item2 WordBreakTest.txt NA
+        =item3 Perl6-TEST-STATUS: NA
 
 =head1 Mirroring
 =item BidiMirroring.txt
@@ -87,7 +90,7 @@
     =item2 Subset of BidiMirroringGlyph. And only includes brackets.
     =item2 **Note** does not include matched quotation marks.
 
-=item BidiCharacterTest.txt #N/A
+=item BidiCharacterTest.txt N/A
     =item2 *This file provides a conformance test for implementations of the Unicode Bidirectional Algorithm, specified in UAX \#9: Unicode.
     Bidirectional Algorithm, at http://www.unicode.org/reports/tr9/*
     =item2 Focuses on reordering of text from a single line
@@ -131,14 +134,14 @@
 =item Index.txt
 =item IndicPositionalCategory.txt
 =item IndicSyllabicCategory.txt
-=item Jamo.txt
-    =item2 Data: Jamo_Short_Name
+=item Jamo.txt C<Jamo_Short_Name>
 
-=item LineBreak.txt
-    =item2 Data: Line_Break
+=item LineBreak.txt C<Line_Break>
 
 =item NamedSequencesProv.txt
-=item NamedSequences.txt
+=item NamedSequences.txt SUPPORTED
+    =item2 Names codepoint sequences which are like Name Aliases but are for multiple
+    codepoints.
 =item NamesList.html
 =item NamesList.txt
 =item NormalizationCorrections.txt
@@ -154,8 +157,14 @@
     C<Logical_Order_Exception> C<Other_ID_Start> C<Other_ID_Continue>
 
 =item ReadMe.txt
-=item ScriptExtensions.txt
-=item Scripts.txt
+=item ScriptExtensions.txt C<Script_Extensions> L<TR|http://www.unicode.org/reports/tr24/#Assignment_ScriptX_Values>
+    =item2 B<Status>: Unsupported
+    =item2 Values are an unordered set for codepoints that have this property.
+    Can be one or more of the many Scripts. As of Unicode 9.0 the number of items
+    in the set from 1-17 different scripts. Most have 1 or 2 scripts (mode).
+=item Scripts.txt UniProp_DATA: C<Script> L<TR|http://www.unicode.org/reports/tr24/>
+    =item2 The C<Script> of the codepoint. This can only have one value unlike
+    the C<scx> property.
 =item SpecialCasing.txt
 =item StandardizedVariants.html
 =item StandardizedVariants.txt

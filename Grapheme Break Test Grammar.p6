@@ -43,6 +43,7 @@ constant %fudged-tests = {
     839 => ['C', '1'],
 };
 sub MAIN (Str:D :$file? = $location, Str :$only?, Bool:D :$debug = False) {
+    $DEBUG = $debug;
     my @only = $only ?? $only.split([',', ' ']) !! Empty;
     die "Can't find file at ", $file.IO.absolute unless $file.IO.f;
     note "Reading file ", $file.IO.absolute;
