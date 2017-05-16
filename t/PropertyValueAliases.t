@@ -26,16 +26,21 @@ class PropertyValueAliases::Actions {
 
 }
 sub MAIN (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt') {
+    GetPropertyValueLookupHash($filename);
+}
+#| Returns a hash whose keys are PropertyValues and whose values are list's of list's.
+#| AHex => [[N No F False] [Y Yes T True]],
+sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt') is export {
     my $io = $filename.IO;
     chdir $io.dirname;
-    use Test;
+    my %lookup-hash;
     for $io.lines {
         next if $_ eq '' or .starts-with('#');
         my $parse = PropertyValueAliases.new.parse($_,
             actions => PropertyValueAliases::Actions.new
         );
         my %hash = $parse.made // exit 1;
-        say %hash;
+        %lookup-hash{%hash<Property_Name>}.push: %hash<Alias_Name>;
     }
-    done-testing;
+    %lookup-hash;
 }
