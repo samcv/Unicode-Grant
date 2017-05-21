@@ -25,12 +25,43 @@ class PropertyValueAliases::Actions {
     }
 
 }
-sub MAIN (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt', Bool:D :$test) {
+sub MAIN (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt', Bool:D :$test = False) {
     if $test {
         test-it;
     }
     else {
-        GetPropertyValueLookupHash($filename);
+        #say GetPropertyValueLookupHash($filename).gist;
+        require 'PropertyAliases.t' <&GetPropertyAliasesLookupHash>;
+        my %lookup-hash = GetPropertyAliasesLookupHash;
+        my %hash = GetPropertyValueLookupHash($filename);
+        my @list;
+        my %has-hash;
+        for %hash.keys -> $key {
+            for %hash{$key}.list {
+                for .list {
+                    @list.push: $_;
+                    if %has-hash{$_}:!exists {
+                        %has-hash{$_}.push($key);
+                    }
+                    elsif %has-hash{$_}.none eq $key {
+                        %has-hash{$_}.push($key);
+                    }
+                }
+            }
+        }
+        my @strs;
+        for %has-hash.grep({.value.elems > 1}).sort(*.value.elems) -> $elem {
+            my $str = $elem.key ~ ' => ["';
+            my @list;
+            for $elem.value.list {
+                @list.push: %lookup-hash{$_};
+            }
+            $str ~= @list.join(“", "”) ~ '"],';
+            @strs.push($str) unless $elem.key eq <True False T F Yes No Y N>.any;
+        }
+        note "All except <True False T F Yes No Y N>";
+        @strs.join("\n").say;
+        exit;
     }
 }
 #| Returns a hash whose keys are PropertyValues and whose values are list's of list's.
@@ -50,8 +81,8 @@ sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.
 }
 sub test-it {
     use lib 't';
-    require 'PropertyAliases.t' <&GetPropertyAliasesLookupHash>;
-    my %lookup-hash = GetPropertyAliasesLookupHash;
+    require 'PropertyAliases.t' <&GetPropertyAliasesRevLookupHash>;
+    my %lookup-hash = GetPropertyAliasesRevLookupHash;
     my %values-hash = GetPropertyValueLookupHash;
     use nqp;
     require Test <&is &ok &done-testing &is-deeply>;

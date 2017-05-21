@@ -45,8 +45,14 @@ sub MAIN (Str:D $filename = "UNIDATA/BidiBrackets.txt") {
             );
         $parse orelse next;
         my %hash = $parse.made;
-        is-prop-hash %hash;
+        derive %hash;
+        #is-prop-hash %hash;
 
     }
 
+}
+sub derive (%hash) {
+    say %hash<codepoint>.uniprop('Bidi_Mirroring_Glyph') eq %hash<Bidi_Paired_Bracket>.chr;
+    say so %hash<codepoint>.uniprop eq <Pe Pf Ps Pi>.any;
+    #say "$_.base(16) $_.chr()" if .uniprop('Bidi_Mirroring_Glyph') and .uniprop eq <Pe Pf Ps Pi>.any
 }

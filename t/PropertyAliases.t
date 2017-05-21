@@ -35,9 +35,17 @@ sub MAIN (Str:D $filename = 'UNIDATA/PropertyAliases.txt', Bool:D :$test) {
 }
 #| Returns a hash whose keys are PropertyAliases and whose values are the short name
 #| which is usable with GetPropertyValueLookupHash to look up different value aliases
+sub GetPropertyAliasesRevLookupHash (Str $filename = 'UNIDATA/PropertyAliases.txt') is export {
+    lookuphash-internal($filename)<rev-lookup>;
+}
+#| Returns a hash whose keys are PropertyAliases and whose values are the full names
 sub GetPropertyAliasesLookupHash (Str $filename = 'UNIDATA/PropertyAliases.txt') is export {
+    lookuphash-internal($filename)<lookup>;
+}
+sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
     my $io = $filename.IO;
     my %lookup-hash;
+    my %rev-lookup-hash;
     for $io.lines {
         next if $_ eq '' or .starts-with('#');
         my $parse = PropertyAliases.new.parse($_,
@@ -45,10 +53,11 @@ sub GetPropertyAliasesLookupHash (Str $filename = 'UNIDATA/PropertyAliases.txt')
         );
         my %hash = $parse.made // exit 1;
         for %hash<Property_Alias_Name> {
-            %lookup-hash{$_} = %hash<Property_Name>
+            %lookup-hash{$_} = %hash<Property_Name>;
+            %rev-lookup-hash{%hash<Property_Name>} = $_;
         }
     }
-    %lookup-hash;
+    %( rev-lookup => %lookup-hash, lookup => %rev-lookup-hash);
 }
 sub test-it {
     my %lookup-hash = GetPropertyAliasesLookupHash;
