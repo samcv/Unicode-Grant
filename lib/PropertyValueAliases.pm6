@@ -26,16 +26,25 @@ class PropertyValueAliases::Actions {
 #| AHex => [[N No F False] [Y Yes T True]],
 #| The first value in the array is the shortened property value, and the second
 #| one is the long form one. The ones after that point are additional aliases
-sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt') is export {
-    my $io = $filename.IO;
-    my %lookup-hash;
-    for $io.lines {
-        next if $_ eq '' or .starts-with('#');
-        my $parse = PropertyValueAliases.new.parse($_,
-            actions => PropertyValueAliases::Actions.new
-        );
-        my %hash = $parse.made // exit 1;
-        %lookup-hash{%hash<Property_Name>}.push: %hash<Alias_Name>;
+multi sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt') is export {
+    state %lookup-hash;
+    if !%lookup-hash {
+        my $io = $filename.IO;
+        for $io.lines {
+            next if $_ eq '' or .starts-with('#');
+            my $parse = PropertyValueAliases.new.parse($_,
+                actions => PropertyValueAliases::Actions.new
+            );
+            $parse // exit 1;
+            my %hash = $parse.made // exit 1;
+            %lookup-hash{%hash<Property_Name>}.push: %hash<Alias_Name>;
+        }
     }
     %lookup-hash;
+}
+multi sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt', :long-property-names) is export {
+    my %lookup-hash = GetPropertyValueLookupHash($filename);
+    my %long-pname-lookup-hash;
+    #use thing;
+
 }

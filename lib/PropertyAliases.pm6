@@ -1,15 +1,26 @@
-my $line = 'ccc; 133; CCC133                     ; CCC133 # RESERVED';
-use lib 't';
-use lib 'lib';
-use PropertyAliases;
-use Test::UniProp;
-sub MAIN (Str:D $filename = 'UNIDATA/PropertyAliases.txt', Bool:D :$test) {
-    if $test {
-        test-it;
+grammar PropertyAliases {
+    rule TOP {
+        <.ws>?
+        <Property_Name> ';'
+        <Property_Alias_Name>+ % ';'
+        [
+            [ <.ws>? ] |[ <.ws>? '#' .* ]
+        ]
     }
-    else {
-         GetPropertyAliasesLookupHash($filename);
+    token hex { <:AHex>+ }
+    token Property_Name { <.ws> <( <allowed-chars> )> <.ws> }
+    token Property_Alias_Name { <.ws> <( <allowed-chars> )> <.ws> }
+    token allowed-chars { <[\S]-[;]>+ }
+
+}
+class PropertyAliases::Actions {
+    method TOP ($/) {
+        make {
+            Property_Name => ~$<Property_Name>,
+            Property_Alias_Name =>  $<Property_Alias_Name>».Str
+        }
     }
+
 }
 #| Returns a hash whose keys are PropertyAliases and whose values are the short name
 #| which is usable with GetPropertyValueLookupHash to look up different value aliases
@@ -47,15 +58,4 @@ sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
         }
     }
     %( rev-lookup => %lookup-hash, lookup => %rev-lookup-hash);
-}
-sub test-it {
-    my %lookup-hash = GetPropertyAliasesLookupHash;
-    use nqp;
-    require Test <&is &done-testing>;
-    for %lookup-hash.keys -> $propname {
-        is nqp::unipropcode($propname),
-            nqp::unipropcode(%lookup-hash{$propname}),
-            "$propname %lookup-hash{$propname}";
-    }
-    done-testing;
 }
