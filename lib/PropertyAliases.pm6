@@ -44,8 +44,8 @@ sub GetPropertyAliasesList (Str $filename = 'UNIDATA/PropertyAliases.txt') is ex
 }
 sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
     my $io = $filename.IO;
+    my %rev-lookup-hash2;
     my %lookup-hash;
-    my %rev-lookup-hash;
     for $io.lines {
         next if $_ eq '' or .starts-with('#');
         my $parse = PropertyAliases.new.parse($_,
@@ -53,9 +53,13 @@ sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
         );
         my %hash = $parse.made // exit 1;
         for %hash<Property_Alias_Name> {
-            %lookup-hash{$_} = %hash<Property_Name>;
-            %rev-lookup-hash{%hash<Property_Name>} = $_;
+            %rev-lookup-hash2{$_} = %hash<Property_Name>;
+            # Make sure to also map the short names to the short names themselves
+            %rev-lookup-hash2{%hash<Property_Name>} = %hash<Property_Name>;
+            %lookup-hash{%hash<Property_Name>} = $_;
+            # Make sure to also map the full names to the full names themselves
+            %lookup-hash{$_} = $_;
         }
     }
-    %( rev-lookup => %lookup-hash, lookup => %rev-lookup-hash);
+    %( rev-lookup => %rev-lookup-hash2, lookup => %lookup-hash);
 }
