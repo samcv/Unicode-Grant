@@ -42,10 +42,36 @@ sub GetPropertyAliasesList (Str $filename = 'UNIDATA/PropertyAliases.txt') is ex
     }
     @allprops;
 }
+#| Returns a hash whose values arrays of all the property names which are equivalent
+sub GetPropertyAliases (Str $filename = 'UNIDATA/PropertyAliases.txt') is export {
+    state %state;
+    if !%state {
+        my $io = $filename.IO;
+        my %rev-lookup-hash2;
+        my %lookup-hash;
+        for $io.lines {
+            next if $_ eq '' or .starts-with('#');
+            my $parse = PropertyAliases.new.parse($_,
+                actions => PropertyAliases::Actions.new
+            );
+            my %hash = $parse.made // exit 1;
+            for %hash<Property_Alias_Name> {
+                my Str $short-name = %hash<Property_Name>.Str;
+                my Str $long-name  = $_.Str;
+                %rev-lookup-hash2{$long-name}.push: $short-name;
+                %rev-lookup-hash2{$long-name}.push: $long-name;
+                %lookup-hash{$short-name}.push: $long-name;
+                %lookup-hash{$short-name}.push: $short-name;
+            }
+        }
+        %state = %( long => %rev-lookup-hash2, short => %lookup-hash);
+    }
+    %state;
+}
 sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
     my $io = $filename.IO;
-    my %rev-lookup-hash2;
-    my %lookup-hash;
+    my Str %rev-lookup-hash2;
+    my Str %lookup-hash;
     for $io.lines {
         next if $_ eq '' or .starts-with('#');
         my $parse = PropertyAliases.new.parse($_,
@@ -53,12 +79,14 @@ sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
         );
         my %hash = $parse.made // exit 1;
         for %hash<Property_Alias_Name> {
-            %rev-lookup-hash2{$_} = %hash<Property_Name>;
+            my Str $short-name = %hash<Property_Name>.Str;
+            my Str $long-name  = $_.Str;
+            %rev-lookup-hash2{$long-name} = $short-name;
             # Make sure to also map the short names to the short names themselves
-            %rev-lookup-hash2{%hash<Property_Name>} = %hash<Property_Name>;
-            %lookup-hash{%hash<Property_Name>} = $_;
+            %rev-lookup-hash2{$short-name} = $short-name;
+            %lookup-hash{$short-name} = $long-name;
             # Make sure to also map the full names to the full names themselves
-            %lookup-hash{$_} = $_;
+            %lookup-hash{$long-name} = $long-name;
         }
     }
     %( rev-lookup => %rev-lookup-hash2, lookup => %lookup-hash);
