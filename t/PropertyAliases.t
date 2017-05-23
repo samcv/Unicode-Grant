@@ -42,6 +42,17 @@ sub GetPropertyAliasesRevLookupHash (Str $filename = 'UNIDATA/PropertyAliases.tx
 sub GetPropertyAliasesLookupHash (Str $filename = 'UNIDATA/PropertyAliases.txt') is export {
     lookuphash-internal($filename)<lookup>;
 }
+sub GetPropertyAliasesList (Str $filename = 'UNIDATA/PropertyAliases.txt') is export {
+    my %lookup-hash = GetPropertyAliasesLookupHash($filename);
+    my @allprops;
+    for %lookup-hash.keys {
+        @allprops.push: $_;
+        for  %lookup-hash{$_}.list -> $elem {
+            @allprops.push: $elem;
+        }
+    }
+    @allprops;
+}
 sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
     my $io = $filename.IO;
     my %lookup-hash;
