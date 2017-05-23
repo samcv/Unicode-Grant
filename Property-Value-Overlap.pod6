@@ -1,0 +1,55 @@
+=begin pod
+All of the property *names* that conflict with values are Bool properties:
+```
+«« IDC Conflict with property name [blk]  is a boolean property
+«« VS Conflict with property name [blk]  is a boolean property
+«« White_Space Conflict with property name [bc]  is a boolean property
+«« Alphabetic Conflict with property name [lb]  is a boolean property
+«« Hyphen Conflict with property name [lb]  is a boolean property
+«« Ideographic Conflict with property name [lb]  is a boolean property
+«« Lower Conflict with property name [SB]  is a boolean property
+«« STerm Conflict with property name [SB]  is a boolean property
+«« Upper Conflict with property name [SB]  is a boolean property
+```
+**I would like this to be 0th in priority**
+0. Property Name (i.e. <:White_Space>, <:Hyphen>)
+
+If we set our preferred properties to be `General_Category` and `Script`, then we get 49 property values with overlaps. If we add a third preferred property `Grapheme_Cluster_Break` we only have 30 remaining.
+
+From here we can resolve Canonical_Combining_Class, and also we should resolve `Numeric_Type` so that people can use `<:Numeric>` in their regex (I'm sure that there must already exist code where this is used so we need to make sure this is resolved as well).
+
+**Leaving us at a hierarchy of**
+0. Property Name (i.e. <:White_Space>, <:Hyphen>)
+1. General_Category
+2. Script
+3. Grapheme_Cluster_Break
+4. Canonical_Combining_Class
+5. Numeric_Type
+
+I am open to adding whichever properties people think most important to the ordered priority list as well.
+
+The ones with overlap remaining after this point:
+```
+NU => ["Word_Break", "Line_Break", "Sentence_Break"],
+NA => ["Age", "Hangul_Syllable_Type", "Indic_Positional_Category"],
+E => ["Joining_Group", "Jamo_Short_Name"],
+SP => ["Line_Break", "Sentence_Break"],
+CL => ["Line_Break", "Sentence_Break"],
+D => ["Jamo_Short_Name", "Joining_Type"],
+Narrow => ["East_Asian_Width", "Decomposition_Type"],
+NL => ["Word_Break", "Line_Break"],
+Wide => ["East_Asian_Width", "Decomposition_Type"],
+Hebrew_Letter => ["Word_Break", "Line_Break"],
+U => ["Jamo_Short_Name", "Joining_Type"],
+LE => ["Word_Break", "Sentence_Break"],
+Close => ["Bidi_Paired_Bracket_Type", "Sentence_Break"],
+BB => ["Jamo_Short_Name", "Line_Break"],
+HL => ["Word_Break", "Line_Break"],
+Maybe => ["NFKC_Quick_Check", "NFC_Quick_Check"],
+FO => ["Word_Break", "Sentence_Break"],
+H => ["East_Asian_Width", "Jamo_Short_Name"],
+Ambiguous => ["East_Asian_Width", "Line_Break"],
+```
+Any ideas above adding further to the hierarchy (even if they don't have any overlap presently [Unicode 9.0] it could be introduced later]) will be appreciated.
+
+=end pod
