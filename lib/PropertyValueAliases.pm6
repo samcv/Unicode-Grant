@@ -26,7 +26,7 @@ class PropertyValueAliases::Actions {
 #| AHex => [[N No F False] [Y Yes T True]],
 #| The first value in the array is the shortened property value, and the second
 #| one is the long form one. The ones after that point are additional aliases
-multi sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt') is export {
+sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt') is export {
     state %lookup-hash;
     if !%lookup-hash {
         my $io = $filename.IO;
@@ -42,9 +42,44 @@ multi sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAl
     }
     %lookup-hash;
 }
-multi sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt', :long-property-names) is export {
-    my %lookup-hash = GetPropertyValueLookupHash($filename);
-    my %long-pname-lookup-hash;
-    #use thing;
+sub GetPropertyValue-to-long-value-LookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt', :$use-short-pvalues = False, :$use-short-pnames = False) is export {
+    state %new-hash;
+    state %settings;
+    #use lib 'Unicode-Grant/lib';
+    use PropertyAliases;
+    #sub settings-right ($var? ) {
+    #    so( (%settings<use-short-pvalues> == $use-short-pvalues) && (%settings<use-short-pnames> eq $use-short-pnames) )
+    #}
+    sub get-pname ($pname) {
+        if !$use-short-pnames {
+            return GetPropertyAliasesLookupHash{$pname};
+        }
+        else {
+            return $pname;
+        }
+    }
+    if !%new-hash || !%settings || (%settings<use-short-pvalues> != $use-short-pvalues) || (%settings<use-short-pnames> != $use-short-pnames) {
+        my %hash = GetPropertyValueLookupHash;
+        die unless %hash;
+        for %hash.keys -> $propname {
+            for %hash{$propname}.list -> $pvalue-array {
+                my $short = $pvalue-array[0];
+                my $long  = $pvalue-array[1];
+                my @extra = $pvalue-array[2..*];
 
+                my $go-to   = $use-short-pvalues ?? $short !! $long;
+                my $go-from = $use-short-pvalues ?? $long  !! $short;
+
+                my $desig-propname = get-pname($propname);
+                for ($go-from, @extra).flat -> $going-from {
+                    %new-hash{$desig-propname}{$going-from} = $go-to;
+                }
+                %new-hash{$desig-propname}{$go-to} = $go-to;
+            }
+
+        }
+        %settings<use-short-pvalues> = $use-short-pvalues;
+        %settings<use-short-pnames>  = $use-short-pnames;
+    }
+    %new-hash;
 }
