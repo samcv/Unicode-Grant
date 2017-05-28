@@ -17,7 +17,7 @@ class PropertyAliases::Actions {
     method TOP ($/) {
         make {
             Property_Name => ~$<Property_Name>,
-            Property_Alias_Name =>  $<Property_Alias_Name>».Str
+            Property_Alias_Name => $<Property_Alias_Name>».Str
         }
     }
 
@@ -55,7 +55,7 @@ sub GetPropertyAliases (Str $filename = 'UNIDATA/PropertyAliases.txt') is export
                 actions => PropertyAliases::Actions.new
             );
             my %hash = $parse.made // exit 1;
-            for %hash<Property_Alias_Name> {
+            for %hash<Property_Alias_Name>.list {
                 my Str $short-name = %hash<Property_Name>.Str;
                 my Str $long-name  = $_.Str;
                 %rev-lookup-hash2{$long-name}.push: $short-name;
@@ -72,7 +72,7 @@ sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
     state %state;
     if !%state {
         my $io = $filename.IO;
-        my Str %rev-lookup-hash2;
+        my Str %rev-lookup-hash-toshort;
         my Str %lookup-hash;
         for $io.lines {
             next if $_ eq '' or .starts-with('#');
@@ -80,18 +80,23 @@ sub lookuphash-internal (Str $filename = 'UNIDATA/PropertyAliases.txt') {
                 actions => PropertyAliases::Actions.new
             );
             my %hash = $parse.made // exit 1;
-            for %hash<Property_Alias_Name> {
+            my @list = %hash<Property_Alias_Name>.list;
+            {
                 my Str $short-name = %hash<Property_Name>.Str;
-                my Str $long-name  = $_.Str;
-                %rev-lookup-hash2{$long-name} = $short-name;
+                my Str $long-name  = @list[0].Str;
+                %rev-lookup-hash-toshort{$long-name} = $short-name;
                 # Make sure to also map the short names to the short names themselves
-                %rev-lookup-hash2{$short-name} = $short-name;
+                %rev-lookup-hash-toshort{$short-name} = $short-name;
                 %lookup-hash{$short-name} = $long-name;
                 # Make sure to also map the full names to the full names themselves
                 %lookup-hash{$long-name} = $long-name;
+                for @list[1..*] {
+                    %rev-lookup-hash-toshort{$_} = $short-name;
+                    %lookup-hash{$_} = $long-name;
+                }
             }
         }
-        %state = %( rev-lookup => %rev-lookup-hash2, lookup => %lookup-hash);
+        %state = %( rev-lookup => %rev-lookup-hash-toshort, lookup => %lookup-hash);
     }
     %state;
 }

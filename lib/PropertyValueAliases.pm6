@@ -45,11 +45,7 @@ sub GetPropertyValueLookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.
 sub GetPropertyValue-to-long-value-LookupHash (Str:D $filename = 'UNIDATA/PropertyValueAliases.txt', :$use-short-pvalues = False, :$use-short-pnames = False) is export {
     state %new-hash;
     state %settings;
-    #use lib 'Unicode-Grant/lib';
     use PropertyAliases;
-    #sub settings-right ($var? ) {
-    #    so( (%settings<use-short-pvalues> == $use-short-pvalues) && (%settings<use-short-pnames> eq $use-short-pnames) )
-    #}
     sub get-pname ($pname) {
         if !$use-short-pnames {
             return GetPropertyAliasesLookupHash{$pname};
