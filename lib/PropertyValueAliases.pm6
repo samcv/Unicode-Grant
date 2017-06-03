@@ -30,9 +30,11 @@ class PropertyValueAliases::Actions {
 #| a string which contains the Unicode datafile reason/null value for that property
 sub GetPropertyValueLookupHash (
 Str:D $filename = 'UNIDATA/PropertyValueAliases.txt',
-Bool:D :$use-short-pnames = True
+Bool:D :$use-short-pnames = True,
+Bool:D :$missing          = False
 ) is export {
     state %lookup-hash;
+    state %missing-hash;
     use PropertyAliases;
     if !%lookup-hash {
         my $io = $filename.IO;
@@ -46,8 +48,10 @@ Bool:D :$use-short-pnames = True
                 if $<reason> eq '<script>' {
                     $value = %lookup-hash<long><Script>;
                 }
-                %lookup-hash<long>{ GetPropertyAliasesLookupHash{~$<pname>} } = $value;
-                %lookup-hash<short>{GetPropertyAliasesRevLookupHash{~$<pname>} } = $value;
+                else {
+                    %missing-hash<long>{ GetPropertyAliasesLookupHash{~$<pname>} } = $value;
+                    %missing-hash<short>{GetPropertyAliasesRevLookupHash{~$<pname>} } = $value;
+                }
                 next;
             }
             next if .starts-with('#');
@@ -62,6 +66,9 @@ Bool:D :$use-short-pnames = True
                 %lookup-hash<long>{ GetPropertyAliasesLookupHash{%hash<Property_Name>} }.push: %hash<Alias_Name>;
             #}
         }
+    }
+    if $missing {
+        return $use-short-pnames ?? %missing-hash<short> !! %missing-hash<long>;
     }
     $use-short-pnames ?? %lookup-hash<short> !! %lookup-hash<long>;
 }
