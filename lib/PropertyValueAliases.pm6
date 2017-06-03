@@ -41,8 +41,13 @@ Bool:D :$use-short-pnames = True
             if .contains('@missing') {
                 .match: /:s ^ '# @missing: 0000..10FFFF;' $<pname>=(<[\S]-[;]>+) ';' $<reason>=(<[\S]-[;]>.*) /;
                 die "Failed to parse line: '$_'" unless $<pname>;
-                %lookup-hash<long>{ GetPropertyAliasesLookupHash{~$<pname>} } = ~$<reason>;
-                %lookup-hash<short>{GetPropertyAliasesRevLookupHash{~$<pname>} } = ~$<reason>;
+                my $value = ~$<reason>;
+                # If script we need to duplicate the values
+                if $<reason> eq '<script>' {
+                    $value = %lookup-hash<long><Script>;
+                }
+                %lookup-hash<long>{ GetPropertyAliasesLookupHash{~$<pname>} } = $value;
+                %lookup-hash<short>{GetPropertyAliasesRevLookupHash{~$<pname>} } = $value;
                 next;
             }
             next if .starts-with('#');
