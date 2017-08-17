@@ -1,0 +1,39 @@
+= Home
+
+This is the wiki for my work on Unicode Grant for Perl 6.
+
+The page below, All Unicode Files has most of the documentation so far.
+link:All-Unicode-Files[All Unicode Files]
+
+TODO: Property names and property value aliases must be resolvable
+
+Currently: We have one big hash and we can look up the property name based on the
+value. For example we can look up "Latin" and find that it is associated with
+the property "Script"
+
+But often they are non-unique.
+See link:Property-Value-Overlap[Property-Value-Overlay] for information about the present
+status.
+
+== Merged in Work Below
+
+== Merged in so far:
+
+=== Roast https://github.com/perl6/roast/pull/267[New version of GraphemeBreakTest.t]
+
+New script tests the contents of each grapheme individually from
+the `GraphemeClusterBreak.txt` file from the Unicode 9.0 test suite.
+
+Previously we only checked the total number of ‘.chars’ for the
+string as a whole. Here we actually check the string length as well
+as that each grapheme contains the exact correct codepoints
+in the correct order and correct graphemes.
+
+This new test uses a grammar to parse the file and generally is much more
+robust than the previous script.
+
+Running the parse class generates an array of arrays where the index
+of the outer array indicates which
+
+`[[10084, 776], [9757]]` would indicate the 0th grapheme is made up of
+cp's 10084 and 776 and the 1st grapheme is made up cp 9757.
