@@ -1,28 +1,28 @@
-=begin pod
+= Home
+
 This is the wiki for my work on Unicode Grant for Perl 6.
 
 The page below, All Unicode Files has most of the documentation so far.
-L<All Unicode Files|All-Unicode-Files>
+link:All-Unicode-Files[All Unicode Files]
 
-TODO:
-Property names and property value aliases must be resolvable
+TODO: Property names and property value aliases must be resolvable
 
 Currently: We have one big hash and we can look up the property name based on the
 value. For example we can look up "Latin" and find that it is associated with
 the property "Script"
 
 But often they are non-unique.
-See C<Property-Value-Overlap|Property-Value-Overlap> for information about the present
+See link:Property-Value-Overlap[Property-Value-Overlay] for information about the present
 status.
 
-=head2 Merged in Work Below
+== Merged in Work Below
 
-=head2 Merged in so far:
+== Merged in so far:
 
-=head3 Roast L<New version of GraphemeBreakTest.t|https://github.com/perl6/roast/pull/267>
+=== Roast L<New version of GraphemeBreakTest.t|https://github.com/perl6/roast/pull/267>
 
 New script tests the contents of each grapheme individually from
-the GraphemeClusterBreak.txt file from the Unicode 9.0 test suite.
+the `GraphemeClusterBreak.txt` file from the Unicode 9.0 test suite.
 
 Previously we only checked the total number of ‘.chars’ for the
 string as a whole. Here we actually check the string length as well
@@ -35,7 +35,5 @@ robust than the previous script.
 Running the parse class generates an array of arrays where the index
 of the outer array indicates which
 
-C<[[10084, 776], [9757]]> would indicate the 0th grapheme is made up of
+`[[10084, 776], [9757]]` would indicate the 0th grapheme is made up of
 cp's 10084 and 776 and the 1st grapheme is made up cp 9757.
-
-=end pod
