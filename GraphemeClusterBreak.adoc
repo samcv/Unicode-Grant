@@ -1,0 +1,4 @@
+= GraphemeClusterBreak
+
+NOTE: Page will hold information on work on optimizing Grapheme Cluster Break
+This page will contain information about the Grapheme Cluster Break property.
