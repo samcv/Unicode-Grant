@@ -1,0 +1,188 @@
+= All Unicode Files
+:toc:
+:toclevels: 10
+
+== Key
+* NameofFile.txt _N/A-to-Perl6_
+** The name of the file as seen at URL
+** Will show _N/A-to-Perl6_ if its contents are not needed as a *data source*
+    or as a *test source*.
+* TASK: Task-name-here
+** The name of the task that this data file is associated with for this
+    Grant's work.
+
+* Perl6-TEST-STATUS: N/A
+** shows status of a *test data* document being implemented in Perl 6
+* Perl6-TEST-STATUS: InProjectRepo
+** Meaning that the test is done and in this repository
+* UniProp_DATA: _Property_Name_
+** Shows what properties are included in a *source data* document.
+
+== Directory/Unicode Data Files
+
+=== List of Canonical Aliases
+
+==== PropertyAliases.txt
+** Alias names of Unicode property _names_ to other canonical property names.
+** We need this because Perl 6 should accept any canonical property name alias
+          Aside: can/should be case insensitive and nonsensitive to underscores
+          _graphemeclusterbreak_ should be work for _Grapheme_Cluster_Break_
+** *NOT* guaranteed to be unique and several property aliases are also
+    unrelated property values
+** Perl6-TEST-STATUS: https://github.com/samcv/Unicode-Grant/blob/master/t/PropertyAliases.t[In Progress]
+
+==== PropertyValueAliases.txt
+** Similar to Property name aliases (see item above), except this is for
+    property *values*. They should be interchangable as well.
+** Perl6-TEST-STATUS: https://github.com/samcv/Unicode-Grant/blob/master/t/PropertyValueAliases.t[In Progress]
+
+==== NameAliases.txt
+
+==== ArabicShaping.txt
+** Perl6-TEST-STATUS: https://github.com/samcv/Unicode-Grant/blob/master/t/ArabicShaping.t[InProjectRepo]
+** UniProp_DATA: `Joining_Type`, `Joining_Group`
+** “__This file defines the Joining_Type and Joining_Group property
+  values for Arabic, Syriac, N'Ko, Mandaic, and Manichaean positional
+  shaping, repeating in machine readable form the information
+  exemplified in Tables 9-3, 9-8, 9-9, 9-10, 9-14, 9-15, 9-16, 9-19,
+  9-20, 10-4, 10-5, 10-6, 10-7, and 19-5 of The Unicode Standard core
+  specification. This file also defines Joining_Type values for
+  Mongolian, Phags-pa, and Psalter Pahlavi positional shaping, which
+  are not listed in tables in the standard.__”
+
+=== auxiliary/
+
+==== GraphemeBreakProperty.txt
+*** UniProp_DATA: `Grapheme_Cluster_Break`
+*** One of the most important properties. Almost exclusively defines
+        how we break up codepoints into graphemes.
+
+==== GraphemeBreakTest.html
+*** TASK: GraphemeClusterBreak[GraphemeClusterBreak]
+*** Has a table which shows a matrix of how GCB properties interact with
+        each other. http://www.unicode.org/Public/9.0.0/ucd/auxiliary/GraphemeBreakTest.html[9.0 Online]
+
+==== GraphemeBreakTest.txt
+** Perl6-TEST-STATUS: [X] Home#roast-new-version-of-graphemebreaktestt[Merged. ROAST_TESTING]
+*** Important test for checking how Graphemes breakup
+**** check breaking them up arbitrarily. I.E.
+        instead of just checking on the total numbers, check when you .substr them
+** LineBreakTest.html
+** LineBreakTest.txt
+*** Perl6-TEST-STATUS: N/A
+*** Perl 6 has access to the Sentence_Break property, but the test is
+        not needed because we don't break up text by sentences in Perl 6.
+** SentenceBreakProperty.txt `Sentence_Break`
+** SentenceBreakTest.html N/A-to-Perl6
+** SentenceBreakTest.txt N/A-to-Perl6
+*** Perl6-TEST-STATUS: N/A
+*** Perl 6 has access to the Sentence_Break property, but the test is
+        not needed because we don't break up text by sentences in Perl 6.
+
+** WordBreakProperty.txt `Word_Break`
+** WordBreakTest.html NA
+** WordBreakTest.txt NA
+*** Perl6-TEST-STATUS: NA
+
+== Mirroring
+
+=== BidiMirroring.txt
+** UniProp: `Bidi_Paired_Bracket` `Bidi_Mirroring_Glyph`
+** Glyphs which should be mirrored and their mirrored counterparts (when switching from LTR or RTL text)
+** Also includes a list of codepoints which have no mirrored pair, but should be mirrored (by flipping).
+
+=== BidiBrackets.txt #Data
+** UniProp: `Bidi_Paired_Bracket_Type`
+** Perl6-TEST-STATUS: https://github.com/samcv/Unicode-Grant/blob/master/t/BidiBrackets.t[Failing in this repo]
+** Subset of BidiMirroringGlyph. And only includes brackets.
+** **Note** does not include matched quotation marks.
+
+* BidiCharacterTest.txt N/A
+** *This file provides a conformance test for implementations of the Unicode Bidirectional Algorithm, specified in UAX \#9: Unicode.
+    Bidirectional Algorithm, at http://www.unicode.org/reports/tr9/*
+** Focuses on reordering of text from a single line
+
+* BidiTest.txt #N/A
+** Tests conformance to Unicode BA focusing on more than a single line
+
+* Blocks.txt
+** Data: Block
+* CaseFolding.txt
+** This file is a supplement to the UnicodeData file.
+        It provides a case folding mapping generated from the Unicode Character Database.
+        If all characters are mapped according to the full mapping below, then
+        case differences (according to UnicodeData.txt and SpecialCasing.txt)
+        are eliminated.
+* CJKRadicals.txt http://www.unicode.org/reports/tr38/[TR]
+* CompositionExclusions.txt
+* DerivedAge.txt
+* DerivedCoreProperties.txt
+* DerivedNormalizationProps.txt
+* EastAsianWidth.txt
+* EmojiSources.txt
+** Shift-JIS Encoding
+** This file provides mappings between Unicode code points and sequences on one hand
+        and Shift-JIS codes for cell phone carrier symbols on the other hand.
+
+* extracted/
+** DerivedBidiClass.txt
+** DerivedBinaryProperties.txt
+** DerivedCombiningClass.txt
+** DerivedDecompositionType.txt
+** DerivedEastAsianWidth.txt
+** DerivedGeneralCategory.txt
+** DerivedJoiningGroup.txt
+** DerivedJoiningType.txt
+** DerivedLineBreak.txt
+** DerivedNumericType.txt
+** DerivedNumericValues.txt
+
+* HangulSyllableType.txt
+* Index.txt
+* IndicPositionalCategory.txt
+* IndicSyllabicCategory.txt
+* Jamo.txt `Jamo_Short_Name`
+
+* LineBreak.txt `Line_Break`
+
+* NamedSequencesProv.txt
+* NamedSequences.txt SUPPORTED
+** Names codepoint sequences which are like Name Aliases but are for multiple
+    codepoints.
+* NamesList.html
+* NamesList.txt
+* NormalizationCorrections.txt
+* NormalizationTest.txt
+* PropList.txt
+** Uniprop_DATA: `White_Space` `Bidi_Control` `Join_Control` `Dash`
+    `Hyphen` `Quotation_Mark` `Terminal_Punctuation` `Other_Math`
+    `Hex_Digit` `ASCII_Hex_Digit` `Other_Alphabetic` `Ideographic`
+    `Diacritic` `Extender` `Other_Lowercase` `Other_Uppercase`
+    `Noncharacter_Code_Point` `Other_Grapheme_Extend` `IDS_Binary_Operator`
+    `IDS_Trinary_Operator` `Radical` `Unified_Ideograph`
+    `Other_Default_Ignorable_Code_Point` `Deprecated` `Soft_Dotted`
+    `Logical_Order_Exception` `Other_ID_Start` `Other_ID_Continue`
+
+* ReadMe.txt
+* ScriptExtensions.txt `Script_Extensions` http://www.unicode.org/reports/tr24/#Assignment_ScriptX_Values[TR]
+** *Status*: Unsupported
+** Values are an unordered set for codepoints that have this property.
+    Can be one or more of the many Scripts. As of Unicode 9.0 the number of items
+    in the set from 1-17 different scripts. Most have 1 or 2 scripts (mode).
+* Scripts.txt UniProp_DATA: `Script` http://www.unicode.org/reports/tr24/[TR]
+** The `Script` of the codepoint. This can only have one value unlike
+    the `scx` property.
+* SpecialCasing.txt
+* StandardizedVariants.html
+* StandardizedVariants.txt
+* TangutSources.txt
+* UCD.zip
+* UnicodeData.txt
+* Unihan.zip
+* USourceData.txt N/A-to-Perl6
+** Data on submitted CJK ideographs submitted to the Unicode organization
+** N/A-to-Perl6, this is distributed to allow greater distribution of
+         proposed additions to the CJK ideograph extensions
+
+* USourceGlyphs.pdf N/A-to-Perl6
+** See item above, this just contains pictures of the proposed CJK Ideographs
