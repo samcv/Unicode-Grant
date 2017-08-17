@@ -1,4 +1,5 @@
-=begin pod
+= Property Value Overlay
+
 All of the property *names* that conflict with values are Bool properties:
 ```
 «« IDC Conflict with property name [blk]  is a boolean property
@@ -12,6 +13,7 @@ All of the property *names* that conflict with values are Bool properties:
 «« Upper Conflict with property name [SB]  is a boolean property
 ```
 **I would like this to be 0th in priority**
+[start=0]
 0. Property Name (i.e. <:White_Space>, <:Hyphen>)
 
 If we set our preferred properties to be `General_Category` and `Script`, then we get 49 property values with overlaps. If we add a third preferred property `Grapheme_Cluster_Break` we only have 30 remaining.
@@ -19,6 +21,7 @@ If we set our preferred properties to be `General_Category` and `Script`, then w
 From here we can resolve Canonical_Combining_Class, and also we should resolve `Numeric_Type` so that people can use `<:Numeric>` in their regex (I'm sure that there must already exist code where this is used so we need to make sure this is resolved as well).
 
 **Leaving us at a hierarchy of**
+[start=0]
 0. Property Name (i.e. <:White_Space>, <:Hyphen>)
 1. General_Category
 2. Script
@@ -51,5 +54,3 @@ H => ["East_Asian_Width", "Jamo_Short_Name"],
 Ambiguous => ["East_Asian_Width", "Line_Break"],
 ```
 Any ideas above adding further to the hierarchy (even if they don't have any overlap presently [Unicode 9.0] it could be introduced later]) will be appreciated.
-
-=end pod
