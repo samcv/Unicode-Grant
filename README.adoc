@@ -1,4 +1,5 @@
 = Home
+:toc: preamble
 
 This is the wiki for my work on Unicode Grant for Perl 6.
 
